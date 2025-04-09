@@ -6,10 +6,11 @@ load_dotenv(".env")
 
 from utils.logger import logger
 from utils.leer_csv import leer_csv
-from utils.db import resultados
+from utils.db import leer_tabla
 from datetime import date
 
-
+sql_string_facturas = "SELECT * FROM facturas;"
+leer_facturas = leer_tabla(sql_string_facturas)
 
 
 
