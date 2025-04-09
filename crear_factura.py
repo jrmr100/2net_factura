@@ -6,15 +6,11 @@ load_dotenv(".env")
 
 from utils.logger import logger
 from utils.leer_csv import leer_csv
-from utils.db import cursor
+from utils.db import resultados
 from datetime import date
 
 
-# Ejecutar la consulta SELECT para obtener todos los registros de la tabla
-cursor.execute("SELECT * FROM facturas;")
 
-# Obtener todos los resultados de la consulta
-resultados = cursor.fetchall()
 
 # Imprimir los resultados
 if resultados:

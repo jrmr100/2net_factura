@@ -17,6 +17,21 @@ try:
 
     # Crear un cursor para ejecutar consultas
     cursor = conn.cursor()
+    # Ejecutar la consulta SELECT para obtener todos los registros de la tabla
+    cursor.execute("SELECT * FROM facturas;")
+
+    # Obtener todos los resultados de la consulta
+    resultados = cursor.fetchall()
+    # Imprimir los resultados
+    if resultados:
+        print("Registros en la tabla facturas:")
+        # Obtener los nombres de las columnas (opcional)
+        column_names = [i[0] for i in cursor.description]
+        print(f"Columnas: {', '.join(column_names)}")
+        for fila in resultados:
+            print(fila)
+    else:
+        print(f"La tabla facturas está vacía.")
 
 except mariadb.Error as e:
         print(f"Error al conectar o consultar la base de datos: {e}")
