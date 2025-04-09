@@ -12,16 +12,7 @@ from datetime import date
 
 
 
-# Imprimir los resultados
-if resultados:
-    print("Registros en la tabla facturas:")
-    # Obtener los nombres de las columnas (opcional)
-    column_names = [i[0] for i in cursor.description]
-    print(f"Columnas: {', '.join(column_names)}")
-    for fila in resultados:
-        print(fila)
-else:
-    print(f"La tabla facturas está vacía.")
+
 
 
 
