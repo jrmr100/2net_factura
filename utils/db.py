@@ -32,6 +32,7 @@ finally:
 
 def leer_tabla(sql_string):
     # Ejecutar la consulta SELECT para obtener todos los registros de la tabla
+    print(sql_string)
     cursor.execute(sql_string)
 
     # Obtener todos los resultados de la consulta
