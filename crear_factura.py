@@ -11,7 +11,7 @@ from datetime import date
 
 
 # Ejecutar la consulta SELECT para obtener todos los registros de la tabla
-cursor.execute("SELECT * FROM facturas")
+cursor.execute("SELECT * FROM facturas;")
 
 # Obtener todos los resultados de la consulta
 resultados = cursor.fetchall()
