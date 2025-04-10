@@ -3,8 +3,27 @@ import os
 import mariadb
 
 
+def leer_tabla(sql_string):
+    # Ejecutar la consulta SELECT para obtener todos los registros de la tabla
+    print(sql_string)
+    cursor.execute(sql_string)
+
+    # Obtener todos los resultados de la consulta
+    resultados = cursor.fetchall()
+    # Imprimir los resultados
+    if resultados:
+        print("Registros en la tabla facturas:")
+        # Obtener los nombres de las columnas (opcional)
+        column_names = [i[0] for i in cursor.description]
+        print(f"Columnas: {', '.join(column_names)}")
+        for fila in resultados:
+            print(fila)
+    else:
+        print(f"La tabla facturas está vacía.")
+
 conn = None
 cursor = None
+
 try:
     # Establecer la conexión a la base de datos
     conn = mariadb.connect(
@@ -30,20 +49,3 @@ finally:
     if conn:
         conn.close()
 
-def leer_tabla(sql_string):
-    # Ejecutar la consulta SELECT para obtener todos los registros de la tabla
-    print(sql_string)
-    cursor.execute(sql_string)
-
-    # Obtener todos los resultados de la consulta
-    resultados = cursor.fetchall()
-    # Imprimir los resultados
-    if resultados:
-        print("Registros en la tabla facturas:")
-        # Obtener los nombres de las columnas (opcional)
-        column_names = [i[0] for i in cursor.description]
-        print(f"Columnas: {', '.join(column_names)}")
-        for fila in resultados:
-            print(fila)
-    else:
-        print(f"La tabla facturas está vacía.")

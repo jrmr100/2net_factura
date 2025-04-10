@@ -15,8 +15,6 @@ leer_facturas = leer_tabla(sql_string_facturas)
 
 
 
-
-
 """
 # Leer lista de usuarios activos de MW
 usuarios_mw = leer_csv(os.getenv("ARCHIVO_CSV"))
