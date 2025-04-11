@@ -1,19 +1,61 @@
 # Cargo las variables de entorno previo a mis modulos
+from pydoc import replace
+
 from dotenv import load_dotenv
 import os
 app_dir = os.path.join(os.path.dirname(__file__))
 load_dotenv(".env")
 
+from utils.connect_db import conn, cursor
+from utils.db import buscar_factura, crear_factura, descripcion_factura
+from datetime import date, datetime, timedelta
 from utils.logger import logger
-from utils.leer_csv import leer_csv
-from utils.db import leer_tabla
-from datetime import date
 
-sql_string_facturas = "SELECT * FROM facturas;"
-leer_facturas = leer_tabla(sql_string_facturas)
+today = date.today()
+un_dia = timedelta(days=1)
 
+#Datos de prueba
+table_name = "facturas"
+id_cliente = 9177
+fecha_max = date(2025, 4, 1)
+vencimiento = date(2025, 5, 5)
+total_new_factura = 30.00
 
+##### BUSCO LA FECHA DE EMISION DE LA ULTIMA FACTURA DEL CLIENTE ###########
+emision_last_factura = buscar_factura(table_name, id_cliente)
+factura = False
+if emision_last_factura[0] == "exito":
+    if emision_last_factura[1][0] < fecha_max:  # Valido si la factura es anterior al 1 de Abril
+        factura = True
+else:
+    print(emision_last_factura[1])
 
+# Solo si la factura existe y esta en la fecha correcta
+if factura is True:
+    ##### CREO LA NUEVA FACTURA PRORATEADA AL MISMO CLIENTE ###########
+    crear_factura = crear_factura(id_cliente, emision_last_factura[1][0], vencimiento, emision_last_factura[1][2])
+    if crear_factura[0] == "exito":
+        # Busco la nueva factura creada
+        last_factura = buscar_factura(table_name, id_cliente)
+        if last_factura[0] == "exito":
+            # Le agrego la descripcion
+            desc_fact = descripcion_factura(last_factura[1], total_new_factura, id_cliente)
+            print("Cliente: " + str(id_cliente) + " - " +
+                  "Factura creada: " + str(last_factura[1][1]) +
+                  " - Fecha de emision: " + str(last_factura[1][0]))
+        else:
+            print(last_factura[1])
+    else:
+        print(crear_factura[1])
+else:
+    logger.info("Cliente: " + str(id_cliente) + " - No se proceso la factura.")
+    print("Cliente: " + str(id_cliente) + " - No se proceso la factura.")
+
+# Cierro la conexion con la base de datos
+if cursor:
+    cursor.close()
+if conn:
+    conn.close()
 
 """
 # Leer lista de usuarios activos de MW
@@ -30,14 +72,15 @@ for usuario in usuarios_mw[1:]:
 
     logger.info("\n####### PROCESANDO USUARIO #############:\n " + str(id) + " - " + str(cedula) + " - " + str(correo))
     print("####### PROCESANDO USUARIO #############:\n " + str(id) + " - " + str(cedula) + " - " + str(correo))
-
-    # Busco la ultima factura
-    ultima_factura = buscar_factura(id)
-    fecha_vencimiento = ultima_factura[1]["facturas"][0]["vencimiento"]
-
-    ###### Creo factura nueva a partir de fecha de vencimiento##########
-
-    # le sumo un dia a la fecha de vencimiento
-    fecha_inicio_factura = (datetime.strptime(fecha_vencimiento, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
-    crear_factura = crear_factura(id, fecha_vencimiento)
 """
+
+# TODO: joseph: revisar nombre De: en el PDF factura
+# TODO: joseph: la factura tipo libre es valida para lo requerido
+# TODO: joseph: Clientes con fecha de emision Abril (crear nuevas facturas con descuentos?)
+# TODO: joseph: Revisar la fecha de vencimiento de la nueva factura
+
+# TODO: Obtener lista de clientes automaticas
+# TODO: Revisar logger y print
+# TODO: Almacenar procesados y fallidos
+
+
