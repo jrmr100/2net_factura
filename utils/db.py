@@ -86,7 +86,7 @@ def crear_factura(id_cliente, emision_last_factura, vencimiento, valor_servicio)
         # Hacer commit para guardar los cambios
         conn.commit()
         logger.info("Cliente: " + str(id_cliente) + " - Factura creada con exito")
-        return "exito", "Factura creada con exito"
+        return "exito", "Factura creada con exito", total_factura
     except mariadb.Error as e:
         logger.info("cliente: " + str(id_cliente) + " - Except al crear la factura: " + str(e))
         return "except", str(e)

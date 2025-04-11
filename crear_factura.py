@@ -39,7 +39,7 @@ if factura is True:
         last_factura = buscar_factura(table_name, id_cliente)
         if last_factura[0] == "exito":
             # Le agrego la descripcion
-            desc_fact = descripcion_factura(last_factura[1], total_new_factura, id_cliente)
+            desc_fact = descripcion_factura(last_factura[1], crear_factura[2], id_cliente)
             print("Cliente: " + str(id_cliente) + " - " +
                   "Factura creada: " + str(last_factura[1][1]) +
                   " - Fecha de emision: " + str(last_factura[1][0]))
@@ -82,5 +82,6 @@ for usuario in usuarios_mw[1:]:
 # TODO: Obtener lista de clientes automaticas
 # TODO: Revisar logger y print
 # TODO: Almacenar procesados y fallidos
+# TODO: Limpiar registros viudos de tabla facturaitems
 
 
