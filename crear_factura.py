@@ -1,6 +1,4 @@
 # Cargo las variables de entorno previo a mis modulos
-from pydoc import replace
-
 from dotenv import load_dotenv
 import os
 app_dir = os.path.join(os.path.dirname(__file__))
@@ -10,6 +8,8 @@ from utils.connect_db import conn, cursor
 from utils.db import buscar_factura, crear_factura, descripcion_factura
 from datetime import date, datetime, timedelta
 from utils.logger import logger
+from utils.csv_files import crear_csv, leer_csv
+
 
 today = date.today()
 un_dia = timedelta(days=1)
@@ -18,8 +18,18 @@ un_dia = timedelta(days=1)
 table_name = "facturas"
 id_cliente = 9177
 fecha_max = date(2025, 4, 1)
-vencimiento = date(2025, 5, 5)
-total_new_factura = 30.00
+vencimiento = date(2025, 4, 30)
+
+# Crear CSV para almacenar salidas
+resultado_csv = crear_csv()
+for resultado in resultado_csv:
+    print("Resultado - " + str(resultado))
+    logger.info("Procesando creacion de archivos: " + str(resultado))
+
+
+# Leer lista de usuarios activos de MW
+usuarios_mw = leer_csv(os.getenv("ARCHIVO_CSV"))
+logger.info("Procesando archivo de usuarios activos: " + str(len(usuarios_mw)))
 
 ##### BUSCO LA FECHA DE EMISION DE LA ULTIMA FACTURA DEL CLIENTE ###########
 emision_last_factura = buscar_factura(table_name, id_cliente)
@@ -62,7 +72,6 @@ if conn:
 usuarios_mw = leer_csv(os.getenv("ARCHIVO_CSV"))
 logger.info("Procesando archivo de usuarios activos: " + str(len(usuarios_mw)))
 
-cabecera_csv_salida = "ID, CEDULA, NOMBRE, CORREO, FECHA_VENCIMIENTO\n"
 
 for usuario in usuarios_mw[1:]:
     id = usuario[1]
@@ -75,13 +84,12 @@ for usuario in usuarios_mw[1:]:
 """
 
 # TODO: joseph: revisar nombre De: en el PDF factura
-# TODO: joseph: la factura tipo libre es valida para lo requerido
 # TODO: joseph: Clientes con fecha de emision Abril (crear nuevas facturas con descuentos?)
-# TODO: joseph: Revisar la fecha de vencimiento de la nueva factura
 
 # TODO: Obtener lista de clientes automaticas
 # TODO: Revisar logger y print
 # TODO: Almacenar procesados y fallidos
 # TODO: Limpiar registros viudos de tabla facturaitems
+# TODO: Crear archivo que simule la creacion de la factura para validar antes
 
 
