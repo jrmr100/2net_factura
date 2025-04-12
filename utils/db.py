@@ -30,11 +30,15 @@ def buscar_factura(table_name, id_cliente):
                         " - Fecha de emision: " + str(resultados[0]))
             return "exito", resultados
         else:
+            data_csv = str(id_cliente) + "," + "Cliente no posee facturas."
+            agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
             logger.info("Cliente: " + str(id_cliente) + " - No posee facturas.")
             return "error", "Cliente no posee facturas."
 
 
     except mariadb.Error as e:
+        data_csv = str(id_cliente) + "," + str(e)
+        agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Except al buscar la factura: " + str(e))
         return "except", str(e)
 
@@ -58,7 +62,7 @@ def crear_factura(id_cliente, emision_last_factura, vencimiento, valor_servicio)
     total_factura = f"{total_factura:.2f}"
 
     # campos de la tabla facturas
-    legal = 0
+    legal = 0  # Nro de factura fiscal
     idcliente = id_cliente
     emitido = emision_new_factura
     vencimiento = vencimiento
@@ -91,8 +95,8 @@ def crear_factura(id_cliente, emision_last_factura, vencimiento, valor_servicio)
         conn.commit()
 
         agregar_csv(os.getenv("CSV_NUEVAS"), data_csv)
-        logger.info("Cliente: " + str(id_cliente) + " - Factura creada con exito")
-        return "exito", "Factura creada con exito", total_factura
+        logger.info("Cliente: " + str(id_cliente) + " - Factura nueva creada con exito")
+        return "exito", "Factura nueva creada con exito", total_factura
     except mariadb.Error as e:
         data_csv = str(id_cliente) + "," + str(e)
         agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)

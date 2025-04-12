@@ -4,7 +4,7 @@ import os
 
 try:
     conn = mariadb.connect(
-        host=os.getenv("HOST_MW2"),
+        host=os.getenv("HOST_MW"),
         port=int(os.getenv("DB_PORT")),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),

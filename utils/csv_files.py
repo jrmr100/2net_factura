@@ -26,8 +26,7 @@ def crear_csv():
     crear_descripciones = crear_archivo(os.getenv("CSV_DESCRIPCION"), cabecera_csv)
 
     # No procesados
-    cabecera_csv = "legal, idcliente, emitido, vencimiento, pago, total, tipo, cobrado, iva_igv, sub_total,\
- total_khipu, siro, siroconcepto, percepcion_afip, saldo\n"
+    cabecera_csv = "idcliente, Descripcion\n"
     crear_noprocesados = crear_archivo(os.getenv("CSV_NOPROCESADOS"), cabecera_csv)
 
     return [crear_facturas_nuevas, crear_descripciones, crear_noprocesados]
