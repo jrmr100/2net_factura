@@ -8,7 +8,7 @@ from utils.csv_files import agregar_csv
 
 
 
-def buscar_factura(table_name, id_cliente):
+def buscar_factura(table_name, id_cliente, cedula, nombre):
 
     sql_string = f"""
             SELECT emitido, id, total
@@ -30,7 +30,7 @@ def buscar_factura(table_name, id_cliente):
                         " - Fecha de emision: " + str(resultados[0]))
             return "exito", resultados
         else:
-            data_csv = str(id_cliente) + "," + "Cliente no posee facturas."
+            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "Cliente no posee facturas."
             agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
             logger.info("Cliente: " + str(id_cliente) + " - No posee facturas.")
             return "error", "Cliente no posee facturas."
@@ -42,13 +42,18 @@ def buscar_factura(table_name, id_cliente):
         logger.info("Cliente: " + str(id_cliente) + " - Except al buscar la factura: " + str(e))
         return "except", str(e)
 
-def crear_factura(id_cliente, emision_last_factura, vencimiento, valor_servicio):
+def nueva_factura(id_cliente, cedula, nombre, emision_last_factura, vencimiento, valor_servicio):
     # Nombre de la tabla
     table_name = "facturas"
 
     un_dia = timedelta(days=1)
 
     # Mantengo toda la fecha pero cambio el mes a abril
+    # valida si el dia de la fecha es 31
+
+
+    if emision_last_factura.day == 31:
+        emision_last_factura = emision_last_factura.replace(day=30)
     emision_new_factura = emision_last_factura.replace(month=4)
 
 
@@ -78,7 +83,7 @@ def crear_factura(id_cliente, emision_last_factura, vencimiento, valor_servicio)
     percepcion_afip = 0
     saldo = 0
 
-    data_csv = str(legal) + "," +str(idcliente) + "," + str(emitido) + "," + str(vencimiento) + "," + str(pago) +\
+    data_csv = str(legal) + "," +str(idcliente) + "," + cedula + "," + nombre + "," + "," + str(emitido) + "," + str(vencimiento) + "," + str(pago) +\
                "," + total + "," + str(tipo) + ","  + str(cobrado) + "," + str(iva_igv) + "," + sub_total +\
                "," + str(total_khipu) + "," + str(siro) + "," + str(siroconcepto) + "," + str(percepcion_afip) +\
                "," + str(saldo) + "\n"
@@ -86,25 +91,25 @@ def crear_factura(id_cliente, emision_last_factura, vencimiento, valor_servicio)
     try:
         sql_string = f"INSERT INTO {table_name} (legal, idcliente, emitido, vencimiento, pago, total, tipo, cobrado, iva_igv, sub_total, total_khipu, siro, siroconcepto, percepcion_afip, saldo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         # Pasar los valores de las variables como una tupla
-        cursor.execute(sql_string, (
-        legal, idcliente, emitido, vencimiento, pago, total, tipo, cobrado, iva_igv, sub_total, total_khipu, siro,
-        siroconcepto, percepcion_afip, saldo,))
+        # cursor.execute(sql_string, (
+        # legal, idcliente, emitido, vencimiento, pago, total, tipo, cobrado, iva_igv, sub_total, total_khipu, siro,
+        # siroconcepto, percepcion_afip, saldo,))
 
         # Hacer commit para guardar los cambios
 
-        conn.commit()
+        # conn.commit()
 
         agregar_csv(os.getenv("CSV_NUEVAS"), data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Factura nueva creada con exito")
         return "exito", "Factura nueva creada con exito", total_factura
     except mariadb.Error as e:
-        data_csv = str(id_cliente) + "," + str(e)
+        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "," + str(e)
         agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
         logger.info("cliente: " + str(id_cliente) + " - Except al crear la factura: " + str(e))
         print("cliente: " + str(id_cliente) + " - Except al crear la factura: " + str(e))
         return "except", str(e)
 
-def descripcion_factura(id_factura, cantidad, id_cliente):
+def descripcion_factura(id_factura, cantidad, id_cliente, cedula, nombre):
     # Nombre de la tabla
     table_name = "facturaitems"
 
@@ -119,23 +124,24 @@ def descripcion_factura(id_factura, cantidad, id_cliente):
     tipoitem = 0
     montodescuento = 0
 
-    data_csv = str(idfactura[1]) + "," + descripcion + "," + str(cantidad) + "," + str(idalmacen) + "," + str(impuesto) +\
-               "," + str(block) + "," + str(impuesto911) + "," + str(tipoitem) + "," + str(montodescuento) + "\n"
+    data_csv = id_cliente + "," + cedula + "," + nombre + "," + str(idfactura[1]) + "," + descripcion +\
+               "," + str(cantidad) + "," + str(idalmacen) + "," + str(impuesto) + "," + str(block) +\
+               "," + str(impuesto911) + "," + str(tipoitem) + "," + str(montodescuento) + "\n"
 
 
     try:
         sql_string = f"INSERT INTO {table_name} (idfactura, descripcion, cantidad, idalmacen, impuesto, block, impuesto911, tipoitem, montodescuento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
         # Pasar los valores de las variables como una tupla
-        cursor.execute(sql_string, (
-        idfactura[1], descripcion, cantidad, idalmacen, impuesto, block, impuesto911, tipoitem, montodescuento,))
+        # cursor.execute(sql_string, (
+        # idfactura[1], descripcion, cantidad, idalmacen, impuesto, block, impuesto911, tipoitem, montodescuento,))
 
         # Hacer commit para guardar los cambios
-        conn.commit()
+        # conn.commit()
         agregar_csv(os.getenv("CSV_DESCRIPCION"), data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Descripcion agregada a la factura " + str(id_factura[1]))
         return "exito"
     except mariadb.Error as e:
-        data_csv = str(id_cliente) + "," + str(e)
+        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(e)
         agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Except al agregar la descripcion: " + str(e))
         print("Cliente: " + str(id_cliente) + " - Except al agregar la descripcion: " + str(e))

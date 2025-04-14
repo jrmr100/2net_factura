@@ -5,10 +5,11 @@ app_dir = os.path.join(os.path.dirname(__file__))
 load_dotenv(".env")
 
 from utils.connect_db import conn, cursor
-from utils.db import buscar_factura, crear_factura, descripcion_factura
+from utils.db import buscar_factura, nueva_factura, descripcion_factura
 from datetime import date, datetime, timedelta
 from utils.logger import logger
-from utils.csv_files import crear_csv, leer_csv
+from utils.csv_files import crear_csv, leer_csv, agregar_csv
+
 
 
 today = date.today()
@@ -17,7 +18,7 @@ un_dia = timedelta(days=1)
 #Datos de prueba
 # table_name = "facturas"
 # id_cliente = 9177
-fecha_max = date(2025, 4, 1)
+fecha_max = date(2025, 3, 30)
 vencimiento = date(2025, 4, 30)
 
 # Crear CSV para almacenar salidas
@@ -38,7 +39,7 @@ for usuario in usuarios_mw[1:]:
 
     ##### BUSCO LA FECHA DE EMISION DE LA ULTIMA FACTURA DEL CLIENTE ###########
     table_name = "facturas"
-    emision_last_factura = buscar_factura(table_name, id_cliente)
+    emision_last_factura = buscar_factura(table_name, id_cliente, cedula, nombre)
     factura = False
     if emision_last_factura[0] == "exito":
         if emision_last_factura[1][0] < fecha_max:  # Valido si la factura es anterior al 1 de Abril
@@ -49,13 +50,13 @@ for usuario in usuarios_mw[1:]:
     # Solo si la factura existe y esta en la fecha correcta
     if factura is True:
         ##### CREO LA NUEVA FACTURA PRORATEADA AL MISMO CLIENTE ###########
-        crear_factura = crear_factura(id_cliente, emision_last_factura[1][0], vencimiento, emision_last_factura[1][2])
+        crear_factura = nueva_factura(id_cliente, cedula, nombre, emision_last_factura[1][0], vencimiento, emision_last_factura[1][2])
         if crear_factura[0] == "exito":
             # Busco la nueva factura creada
-            last_factura = buscar_factura(table_name, id_cliente)
+            last_factura = buscar_factura(table_name, id_cliente, cedula, nombre)
             if last_factura[0] == "exito":
                 # Le agrego la descripcion
-                desc_fact = descripcion_factura(last_factura[1], crear_factura[2], id_cliente)
+                desc_fact = descripcion_factura(last_factura[1], crear_factura[2], id_cliente, cedula, nombre)
                 print("Cliente: " + str(id_cliente) + " - " +
                       "Factura creada: " + str(last_factura[1][1]) +
                     " - Fecha de emision: " + str(last_factura[1][0]))
@@ -64,8 +65,11 @@ for usuario in usuarios_mw[1:]:
         else:
             print(crear_factura[1])
     else:
-        logger.info("Cliente: " + str(id_cliente) + " - No se proceso la factura.")
-        print("Cliente: " + str(id_cliente) + " - No se proceso la factura.")
+        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(emision_last_factura[1][0]) + ", Emisión en Abril? tiene factura?\n"
+        agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
+
+        logger.info("Cliente: " + str(id_cliente) + " - No se proceso la factura - Emision: " + str(emision_last_factura[1][0]))
+        print("Cliente: " + str(id_cliente) + " - No se proceso la factura - Emision: " + str(emision_last_factura[1][0]))
 
 # Cierro la conexion con la base de datos
 if cursor:
