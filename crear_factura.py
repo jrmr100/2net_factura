@@ -78,7 +78,7 @@ if conn:
     conn.close()
 
 
-# TODO: Cuales usuarios procesar? solo activos, los suspendidos tambien debe agregarse la factura cierto, si pagan se activaran?
+# TODO: Cuales usuarios procesar? solo activos, los suspendidos tambien debe agregarse la factura cierto, si pagan se activaran? R.- Suspendidos se deben poner disable
 # TODO: joseph: Clientes con fecha de emision Abril (crear nuevas facturas con descuentos?)
 # TODO: Validar nuevamente si la factura sera libre, por tema seniat y los permisos
 # TODO: Que hacer con el campo legal (nro fiscal) en la facturas (MW2 no tiene nro de control en factura)
