@@ -15,20 +15,20 @@ def crear_csv(today):
             return "Archivo creado: " + archivo_csv
         except Exception as e:
             print(e)
-            return "Error creando archivo:" +  archivo_csv + " - " + str(today) + str(e)
+            return "Error creando archivo:" +  archivo_csv + str(e)
 
     # Facturas nuevas
     cabecera_csv = "legal, idcliente, cedula, nombre, emitido, vencimiento, pago, total, tipo, cobrado, iva_igv, sub_total,\
  total_khipu, siro, siroconcepto, percepcion_afip, saldo\n"
-    crear_facturas_nuevas = crear_archivo(os.getenv("CSV_NUEVAS"), cabecera_csv)
+    crear_facturas_nuevas = crear_archivo(os.getenv("CSV_NUEVAS") + "-" + str(today) + ".csv", cabecera_csv)
 
     # Descripciones
     cabecera_csv = "id_cliente, cedula, nombre, idfactura, descripcion, cantidad, idalmacen, impuesto, block, impuesto911, tipoitem, montodescuento\n"
-    crear_descripciones = crear_archivo(os.getenv("CSV_DESCRIPCION"), cabecera_csv)
+    crear_descripciones = crear_archivo(os.getenv("CSV_DESCRIPCION") + "-" + str(today) + ".csv", cabecera_csv)
 
     # No procesados
     cabecera_csv = "idcliente, cedula, nombre, Fecha_ultima_factura, Descripcion\n"
-    crear_noprocesados = crear_archivo(os.getenv("CSV_NOPROCESADOS"), cabecera_csv)
+    crear_noprocesados = crear_archivo(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", cabecera_csv)
 
     return [crear_facturas_nuevas, crear_descripciones, crear_noprocesados]
 

@@ -8,7 +8,7 @@ from utils.csv_files import agregar_csv
 
 
 
-def buscar_factura(table_name, id_cliente, cedula, nombre):
+def buscar_factura(table_name, id_cliente, cedula, nombre, today):
 
     sql_string = f"""
             SELECT emitido, id, total
@@ -31,18 +31,18 @@ def buscar_factura(table_name, id_cliente, cedula, nombre):
             return "exito", resultados
         else:
             data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "Cliente no posee facturas."
-            agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
+            agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
             logger.info("Cliente: " + str(id_cliente) + " - No posee facturas.")
             return "error", "Cliente no posee facturas."
 
 
     except mariadb.Error as e:
         data_csv = str(id_cliente) + "," + str(e)
-        agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
+        agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Except al buscar la factura: " + str(e))
         return "except", str(e)
 
-def nueva_factura(id_cliente, cedula, nombre, emision_last_factura, vencimiento, valor_servicio):
+def nueva_factura(id_cliente, cedula, nombre, emision_last_factura, vencimiento, valor_servicio, today):
     # Nombre de la tabla
     table_name = "facturas"
 
@@ -99,17 +99,17 @@ def nueva_factura(id_cliente, cedula, nombre, emision_last_factura, vencimiento,
 
         # conn.commit()
 
-        agregar_csv(os.getenv("CSV_NUEVAS"), data_csv)
+        agregar_csv(os.getenv("CSV_NUEVAS") + "-" + str(today) + ".csv", data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Factura nueva creada con exito")
         return "exito", "Factura nueva creada con exito", total_factura
     except mariadb.Error as e:
         data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "," + str(e)
-        agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
+        agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
         logger.info("cliente: " + str(id_cliente) + " - Except al crear la factura: " + str(e))
         print("cliente: " + str(id_cliente) + " - Except al crear la factura: " + str(e))
         return "except", str(e)
 
-def descripcion_factura(id_factura, cantidad, id_cliente, cedula, nombre):
+def descripcion_factura(id_factura, cantidad, id_cliente, cedula, nombre, today):
     # Nombre de la tabla
     table_name = "facturaitems"
 
@@ -137,11 +137,11 @@ def descripcion_factura(id_factura, cantidad, id_cliente, cedula, nombre):
 
         # Hacer commit para guardar los cambios
         # conn.commit()
-        agregar_csv(os.getenv("CSV_DESCRIPCION"), data_csv)
+        agregar_csv(os.getenv("CSV_DESCRIPCION") + "-" + str(today) + ".csv", data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Descripcion agregada a la factura " + str(id_factura[1]))
         return "exito"
     except mariadb.Error as e:
         data_csv = str(id_cliente) + "," + cedula + "," + nombre + ",," + str(e)
-        agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
+        agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Except al agregar la descripcion: " + str(e))
         print("Cliente: " + str(id_cliente) + " - Except al agregar la descripcion: " + str(e))
