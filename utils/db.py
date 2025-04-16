@@ -83,7 +83,7 @@ def nueva_factura(id_cliente, cedula, nombre, emision_last_factura, vencimiento,
     percepcion_afip = 0
     saldo = 0
 
-    data_csv = str(legal) + "," +str(idcliente) + "," + cedula + "," + nombre + "," + "," + str(emitido) + "," + str(vencimiento) + "," + str(pago) +\
+    data_csv = str(legal) + "," +str(idcliente) + "," + cedula + "," + nombre + "," + str(emitido) + "," + str(vencimiento) + "," + str(pago) +\
                "," + total + "," + str(tipo) + ","  + str(cobrado) + "," + str(iva_igv) + "," + sub_total +\
                "," + str(total_khipu) + "," + str(siro) + "," + str(siroconcepto) + "," + str(percepcion_afip) +\
                "," + str(saldo) + "\n"
