@@ -141,7 +141,7 @@ def descripcion_factura(id_factura, cantidad, id_cliente, cedula, nombre):
         logger.info("Cliente: " + str(id_cliente) + " - Descripcion agregada a la factura " + str(id_factura[1]))
         return "exito"
     except mariadb.Error as e:
-        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(e)
+        data_csv = str(id_cliente) + "," + cedula + "," + nombre + ",," + str(e)
         agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Except al agregar la descripcion: " + str(e))
         print("Cliente: " + str(id_cliente) + " - Except al agregar la descripcion: " + str(e))

@@ -36,6 +36,7 @@ for usuario in usuarios_mw[1:]:
     cedula = usuario[2]
     nombre = f'"{usuario[3]}"'
     correo = usuario[14]
+    plan = usuario[6]
 
     ##### BUSCO LA FECHA DE EMISION DE LA ULTIMA FACTURA DEL CLIENTE ###########
     table_name = "facturas"
@@ -46,6 +47,11 @@ for usuario in usuarios_mw[1:]:
             factura = True
     else:
         print(emision_last_factura[1])
+
+    if "convenio" in nombre.lower() or "convenio" in plan.lower():
+        causa = "Convenio"
+        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(emision_last_factura[1][0]) + "," + causa + "\n"
+        agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
 
     # Solo si la factura existe y esta en la fecha correcta
     if factura is True:
@@ -65,7 +71,8 @@ for usuario in usuarios_mw[1:]:
         else:
             print(crear_factura[1])
     else:
-        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(emision_last_factura[1][0]) + ", Emisión en Abril? tiene factura?\n"
+        causa = "Revisar facturas y sus fechas"
+        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(emision_last_factura[1][0]) + "," + causa +  "\n"
         agregar_csv(os.getenv("CSV_NOPROCESADOS"), data_csv)
 
         logger.info("Cliente: " + str(id_cliente) + " - No se proceso la factura - Emision: " + str(emision_last_factura[1][0]))
