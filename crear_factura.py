@@ -34,7 +34,7 @@ logger.info("Procesando archivo de usuarios activos: " + str(len(usuarios_mw)))
 for usuario in usuarios_mw[1:]:
     id_cliente = usuario[1]
     cedula = usuario[2]
-    nombre = usuario[3]
+    nombre = f'"{usuario[3]}"'
     correo = usuario[14]
 
     ##### BUSCO LA FECHA DE EMISION DE LA ULTIMA FACTURA DEL CLIENTE ###########
