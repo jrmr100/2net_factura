@@ -22,7 +22,7 @@ fecha_max = date(2025, 3, 30)
 vencimiento = date(2025, 4, 30)
 
 # Crear CSV para almacenar salidas
-resultado_csv = crear_csv()
+resultado_csv = crear_csv(today)
 for resultado in resultado_csv:
     print("Resultado - " + str(resultado))
     logger.info("Procesando creacion de archivos: " + str(resultado))

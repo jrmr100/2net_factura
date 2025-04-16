@@ -1,12 +1,13 @@
 import csv
 import os
 
+
 def leer_csv(archivo_csv):
     with open(archivo_csv, 'r') as archivo:
         lector = csv.reader(archivo)
         return list(lector)
 
-def crear_csv():
+def crear_csv(today):
     def crear_archivo(archivo_csv, cabecera):
         try:
             with open(archivo_csv, 'w') as archivo:
@@ -14,7 +15,7 @@ def crear_csv():
             return "Archivo creado: " + archivo_csv
         except Exception as e:
             print(e)
-            return "Error creando archivo:" +  archivo_csv + " - " + str(e)
+            return "Error creando archivo:" +  archivo_csv + " - " + str(today) + str(e)
 
     # Facturas nuevas
     cabecera_csv = "legal, idcliente, cedula, nombre, emitido, vencimiento, pago, total, tipo, cobrado, iva_igv, sub_total,\
