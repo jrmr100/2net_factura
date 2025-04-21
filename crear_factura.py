@@ -43,11 +43,24 @@ for usuario in usuarios_mw[1:]:
     emision_last_factura = buscar_factura(table_name, id_cliente, cedula, nombre, today)
     factura = False
     if emision_last_factura[0] == "exito":
-        if emision_last_factura[1][0] < fecha_max:  # Valido si la factura es anterior al 1 de Abril
+        if emision_last_factura[1][0] < fecha_max:  # Valido si la factura es anterior al 30 de MArzo
             factura = True
     else:
         print(emision_last_factura[1])
 
+    if emision_last_factura[1][0] is date:
+        if emision_last_factura[1][0] < date(2025,3,1):
+            causa = "Fecha de emision antes del 1 de marzo 2025"
+            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(
+                emision_last_factura[1][0]) + "," + causa + "\n"
+            agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
+            continue
+    if len(cedula) > 8:
+        causa = "Cedula es mayor a 8 digitos"
+        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(
+            emision_last_factura[1][0]) + "," + causa + "\n"
+        agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
+        continue
     # Filtro los que son convenios
     if "convenio" in nombre.lower() or "convenio" in plan.lower():
         causa = "Convenio"
@@ -55,6 +68,8 @@ for usuario in usuarios_mw[1:]:
             emision_last_factura[1][0]) + "," + causa + "\n"
         agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
         continue
+
+
 
     # Solo si la factura existe y esta en la fecha correcta
     if factura is True:
