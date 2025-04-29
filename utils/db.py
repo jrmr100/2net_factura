@@ -154,7 +154,7 @@ def saldo_favor(emision_last_factura, today, monto, id_cliente, cedula, nombre, 
     iddestino = 0
     estado = "no cobrado"
     fecha = date(2025,5,1)
-    descripcion = "Saldo a favor por dias mayo 2025"
+    descripcion = "Saldo a favor por cambios en facturación"
     codigopasarela = ""
     moneda = 1
 
