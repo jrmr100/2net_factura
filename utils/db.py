@@ -30,7 +30,7 @@ def buscar_factura(table_name, id_cliente, cedula, nombre, today):
                         " - Fecha de emision: " + str(resultados[0]))
             return "exito", resultados
         else:
-            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "Cliente no posee facturas."
+            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "Cliente no posee facturas.\n"
             agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
             logger.info("Cliente: " + str(id_cliente) + " - No posee facturas.")
             return "error", "Cliente no posee facturas."
@@ -145,3 +145,48 @@ def descripcion_factura(id_factura, cantidad, id_cliente, cedula, nombre, today)
         agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Except al agregar la descripcion: " + str(e))
         print("Cliente: " + str(id_cliente) + " - Except al agregar la descripcion: " + str(e))
+
+def saldo_favor(emision_last_factura, today, monto, id_cliente, cedula, nombre, fecha_inicio):
+    # Nombre de la tabla
+    table_name = "saldos"
+
+    idorigen = 0
+    iddestino = 0
+    estado = "no cobrado"
+    fecha = date(2025,5,1)
+    descripcion = "Saldo a favor por dias mayo 2025"
+    codigopasarela = ""
+    moneda = 1
+
+    valor_dia = monto / 30  # Calculo el valor por dia de cada servicio
+
+    un_dia = timedelta(days=1)
+    # Calculo los dias desde el 2 hasta la fecha de emision de la ultima factura
+    dias_saldo = (emision_last_factura - fecha_inicio) + un_dia
+
+    # Calculo el monto del saldo a agregar
+    monto_saldo = int(dias_saldo.days) * valor_dia
+    monto_saldo = f"{monto_saldo:.2f}"  # quito decimales
+    monto_saldo = float(monto_saldo) * -1  # El saldo debe ser negativo para ser cargado
+
+    try:
+        sql_string = f"INSERT INTO {table_name} (iduser, idorigen, iddestino, estado, monto, fecha, descripcion, codigopasarela, moneda) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        # Pasar los valores de las variables como una tupla
+        #cursor.execute(sql_string, (
+        #id_cliente, idorigen, iddestino, estado, monto, fecha, descripcion, codigopasarela, moneda))
+        # Hacer commit para guardar los cambios
+        # conn.commit()
+
+        data_csv = f"{str(id_cliente)}, {idorigen} , {iddestino}, {estado}, {monto_saldo}, {fecha}, {descripcion}, {codigopasarela}, {moneda}\n"
+
+        agregar_csv(os.getenv("CSV_NUEVAS") + "-" + str(today) + ".csv", data_csv)
+        logger.info("Cliente: " + str(id_cliente) + " - Saldo agregado con exito")
+
+        print(f"EXITO - Cliente: {str(id_cliente)} : {nombre} - Fecha ultima factura: {emision_last_factura} - Dias saldo {dias_saldo.days} - monto saldo: {monto_saldo}")
+        return "exito", "Saldo agregado con exito", data_csv
+    except mariadb.Error as e:
+        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "," + str(e) + "\n"
+        agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
+        logger.info("cliente: " + str(id_cliente) + " - Except al agregar saldo: " + str(e))
+        print("ERROR - cliente: " + str(id_cliente) + " - Except al agregar saldo: " + str(e))
+        return "except", str(e)

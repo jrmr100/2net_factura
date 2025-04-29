@@ -30,7 +30,12 @@ def crear_csv(today):
     cabecera_csv = "idcliente, cedula, nombre, Fecha_ultima_factura, Descripcion\n"
     crear_noprocesados = crear_archivo(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", cabecera_csv)
 
-    return [crear_facturas_nuevas, crear_descripciones, crear_noprocesados]
+    # agregar saldo
+    cabecera_csv = "id_cliente, idorigen, iddestino, estado, monto_saldo, fecha, descripcion, codigopasarela, moneda\n"
+    crear_agregar_saldo = crear_archivo(os.getenv("CSV_NUEVAS") + "-" + str(today) + ".csv", cabecera_csv)
+
+    # return [crear_facturas_nuevas, crear_descripciones, crear_noprocesados]
+    return [crear_agregar_saldo, crear_noprocesados]
 
 
 
