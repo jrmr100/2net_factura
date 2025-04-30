@@ -45,7 +45,32 @@ for usuario in usuarios_mw[1:]:
     emision_last_factura = buscar_factura(table_name, id_cliente, cedula, nombre, today)
     factura = False
     if emision_last_factura[0] == "exito":
-        if fecha_inicio <= emision_last_factura[1][0] <= fecha_fin:
+        if len(cedula) > 8:
+            causa = "Cedula es mayor a 8 digitos"
+            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(
+                emision_last_factura[1][0]) + "," + causa + "\n"
+            agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
+            logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+            print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+            continue
+        # Filtro los que son convenios
+        elif "convenio" in nombre.lower() or "convenio" in plan.lower():
+            causa = "Convenio"
+            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(
+                emision_last_factura[1][0]) + "," + causa + "\n"
+            agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
+            logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+            print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+            continue
+        elif emision_last_factura[1][2] == 0:
+            causa = "Monto factura es cero (0)"
+            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(
+                emision_last_factura[1][0]) + "," + causa + "\n"
+            agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
+            logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+            print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+            continue
+        elif fecha_inicio <= emision_last_factura[1][0] <= fecha_fin:
             factura = True
         else:
             causa = "Fecha de emision fuera de rango (2 al 29 de Abril)"
@@ -55,25 +80,15 @@ for usuario in usuarios_mw[1:]:
             logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
             print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - Fecha ultima factura: {str(emision_last_factura[1][0])} - {causa}")
             continue
-
-
-    if len(cedula) > 8:
-        causa = "Cedula es mayor a 8 digitos"
+    else:
+        causa = emision_last_factura[1]
         data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(
             emision_last_factura[1][0]) + "," + causa + "\n"
         agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
         logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
         print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
         continue
-    # Filtro los que son convenios
-    if "convenio" in nombre.lower() or "convenio" in plan.lower():
-        causa = "Convenio"
-        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(
-            emision_last_factura[1][0]) + "," + causa + "\n"
-        agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
-        logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
-        print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
-        continue
+
 
 
 

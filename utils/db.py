@@ -30,7 +30,7 @@ def buscar_factura(table_name, id_cliente, cedula, nombre, today):
                         " - Fecha de emision: " + str(resultados[0]))
             return "exito", resultados
         else:
-            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "Cliente no posee facturas.\n"
+            data_csv = str(id_cliente) + "," + cedula + "," + nombre + ",," + "Cliente no posee facturas.\n"
             agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
             logger.info("Cliente: " + str(id_cliente) + " - No posee facturas.")
             return "error", "Cliente no posee facturas."
@@ -160,9 +160,10 @@ def saldo_favor(emision_last_factura, today, monto, id_cliente, cedula, nombre, 
 
     valor_dia = monto / 30  # Calculo el valor por dia de cada servicio
 
-    un_dia = timedelta(days=1)
-    # Calculo los dias desde el 2 hasta la fecha de emision de la ultima factura
-    dias_saldo = (emision_last_factura - fecha_inicio) + un_dia
+    dos_dias = timedelta(days=2)
+
+    # Calculo los dias desde el 2 hasta la fecha de emision de la ultima factura mas un dia
+    dias_saldo = (emision_last_factura - fecha_inicio) + dos_dias
 
     # Calculo el monto del saldo a agregar
     monto_saldo = int(dias_saldo.days) * valor_dia
