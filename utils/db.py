@@ -37,7 +37,7 @@ def buscar_factura(table_name, id_cliente, cedula, nombre, today):
 
 
     except mariadb.Error as e:
-        data_csv = str(id_cliente) + "," + str(e)
+        data_csv = str(id_cliente) + "," + str(e) + "\n"
         agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Except al buscar la factura: " + str(e))
         return "except", str(e)

@@ -80,14 +80,7 @@ for usuario in usuarios_mw[1:]:
             logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
             print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - Fecha ultima factura: {str(emision_last_factura[1][0])} - {causa}")
             continue
-    else:
-        causa = emision_last_factura[1]
-        data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + str(
-            emision_last_factura[1][0]) + "," + causa + "\n"
-        agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
-        logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
-        print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
-        continue
+
 
 
 
