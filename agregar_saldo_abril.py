@@ -39,6 +39,28 @@ for usuario in usuarios_mw[1:]:
     nombre = f'"{usuario[3]}"'
     correo = usuario[14]
     plan = usuario[6]
+    fecha_instalacion = usuario[8]
+
+    print(f"fecha de instalacion: {fecha_instalacion}")
+    if fecha_instalacion:
+        if len(fecha_instalacion) <= 10:
+            fecha_instalacion_datetime = datetime.strptime(fecha_instalacion, "%d/%m/%Y")
+            fecha_instalacion_date = fecha_instalacion_datetime.date()
+
+            if fecha_instalacion_date >= date(2025, 4, 1):
+                causa = "Instalado en Abril"
+                data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "" + "," + causa + "\n"
+                agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
+                logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+                print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+                continue
+        else:
+            causa = "Error en fecha de instalacion"
+            data_csv = str(id_cliente) + "," + cedula + "," + nombre + "," + "" + "," + causa + "\n"
+            agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
+            logger.error(f"Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+            print(f"ERROR - Cliente: {str(id_cliente)} - nombre: {nombre} - {causa}")
+            continue
 
     ##### BUSCO LA FECHA DE EMISION DE LA ULTIMA FACTURA DEL CLIENTE ###########
     table_name = "facturas"
