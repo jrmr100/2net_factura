@@ -33,6 +33,7 @@ def buscar_factura(table_name, id_cliente, cedula, nombre, today):
             data_csv = str(id_cliente) + "," + cedula + "," + nombre + ",," + "Cliente no posee facturas.\n"
             agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
             logger.info("Cliente: " + str(id_cliente) + " - No posee facturas.")
+            print("ERROR - Cliente: " + str(id_cliente) + " - No posee facturas.")
             return "error", "Cliente no posee facturas."
 
 
@@ -40,6 +41,7 @@ def buscar_factura(table_name, id_cliente, cedula, nombre, today):
         data_csv = str(id_cliente) + "," + str(e) + "\n"
         agregar_csv(os.getenv("CSV_NOPROCESADOS") + "-" + str(today) + ".csv", data_csv)
         logger.info("Cliente: " + str(id_cliente) + " - Except al buscar la factura: " + str(e))
+        logger.info("ERROR - Cliente: " + str(id_cliente) + " - Except al buscar la factura: " + str(e))
         return "except", str(e)
 
 def nueva_factura(id_cliente, cedula, nombre, emision_last_factura, vencimiento, valor_servicio, today):
